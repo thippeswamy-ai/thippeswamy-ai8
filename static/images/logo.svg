@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#1e3a8a" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+  <!-- Shield Badge -->
+  <g transform="translate(10, 10)" filter="url(#dropShadow)">
+    <path d="M 50,5 L 90,20 L 90,55 C 90,80 50,98 50,98 C 50,98 10,80 10,55 L 10,20 Z" fill="url(#logoGrad)" />
+    <!-- Graduation Cap inside shield -->
+    <path d="M 50,25 L 75,38 L 50,50 L 25,38 Z" fill="#ffffff"/>
+    <path d="M 33,43 L 33,60 C 33,60 50,68 67,60 L 67,43" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 70,39 L 70,55 M 68,55 L 72,55" stroke="#fef08a" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Magnifying Glass Search overlay -->
+    <circle cx="58" cy="62" r="12" fill="none" stroke="#60a5fa" stroke-width="4"/>
+    <line x1="67" y1="71" x2="77" y2="81" stroke="#60a5fa" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <!-- Text -->
+  <text x="115" y="52" font-family="'Inter', 'Segoe UI', sans-serif" font-weight="800" font-size="26" fill="#0f172a" letter-spacing="-0.5">COLLEGE FIND &amp; TRACE</text>
+  <text x="115" y="78" font-family="'Inter', 'Segoe UI', sans-serif" font-weight="600" font-size="14" fill="#2563eb" letter-spacing="1.5">LOST &amp; FOUND PORTAL</text>
+</svg>

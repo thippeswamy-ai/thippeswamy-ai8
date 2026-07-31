@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Found Items Gallery | College Lost & Found System{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div style="text-align:center; margin-bottom:32px;">
+    <h1 class="section-title">Campus Found Items Directory</h1>
+    <p class="section-subtitle">Browse through all items recovered on campus grounds. Search by keyword or filter by category to find your lost item.</p>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div class="filter-bar-card">
+    <div class="filter-grid">
+      
+      <!-- Search Input -->
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="foundSearchInput" class="form-control" placeholder="Search by item name, description, or location..." value="{{ search_query }}">
+      </div>
+
+      <!-- Category Filter Chips -->
+      <div class="category-chips" id="categoryChips">
+        {% for cat in categories %}
+          <button type="button" class="chip {% if current_category == cat %}active{% endif %}" data-category="{{ cat }}">
+            {{ cat }}
+          </button>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Items Counter -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <div style="font-size:0.95rem; color:var(--neutral-600); font-weight:500;">
+      Showing <strong>{{ items|length }}</strong> of <strong>{{ total_count }}</strong> items
+    </div>
+    {% if current_category != 'All' or search_query %}
+      <a href="{{ url_for('main.found_items') }}" class="btn btn-sm btn-reset"><i class="fas fa-times"></i> Clear Filters</a>
+    {% endif %}
+  </div>
+
+  <!-- Found Items Grid -->
+  <div class="cards-grid" id="foundItemsGrid">
+    {% for item in items %}
+      <div class="item-card" data-title="{{ item.item_name }}" data-category="{{ item.category }}" data-desc="{{ item.description }}" data-place="{{ item.place_found }}">
+        <div class="card-img-wrapper">
+          <span class="card-category-badge">{{ item.category }}</span>
+          <span class="card-status-badge {% if item.status == 'Available' %}badge-available{% else %}badge-claimed{% endif %}">
+            {{ item.status }}
+          </span>
+          <img src="{% if item.image_path %}{{ url_for('static', filename='uploads/' + item.image_path) }}{% else %}{{ url_for('static', filename='images/placeholder.svg') }}{% endif %}" alt="{{ item.item_name }}">
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">{{ item.item_name }}</h3>
+          <p class="card-description">{{ item.description }}</p>
+          
+          <div class="card-meta-list">
+            <div class="card-meta-item">
+              <i class="fas fa-map-marker-alt"></i> <span>Location: <strong>{{ item.place_found }}</strong></span>
+            </div>
+            <div class="card-meta-item">
+              <i class="far fa-calendar-alt"></i> <span>Found Date: <strong>{{ item.date_found }}</strong></span>
+            </div>
+            <div class="card-meta-item">
+              <i class="fas fa-user"></i> <span>Uploaded By: {{ item.finder_name }} ({{ item.department }})</span>
+            </div>
+          </div>
+
+          <div class="card-footer" style="flex-direction:column; gap:8px;">
+            <a href="{{ url_for('main.item_detail', item_id=item.id) }}" class="btn btn-sm btn-primary" style="width:100%;">
+              <i class="fas fa-eye"></i> View Details &amp; Claim
+            </a>
+            {% if session.get('admin_logged_in') %}
+              <form action="{{ url_for('admin.delete_item', item_type='found', item_id=item.id) }}" method="POST" style="width:100%;" onsubmit="return confirm('Admin: Permanently delete Found Item #{{ item.id }} ({{ item.item_name }})?');">
+                <button type="submit" class="btn btn-sm btn-outline-danger" style="width:100%;">
+                  <i class="fas fa-trash"></i> Delete Item (Admin)
+                </button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div id="noResultsMessage" style="grid-column: 1/-1; text-align:center; padding:60px; background:var(--white); border-radius:var(--radius-lg); border:1px solid var(--neutral-200);">
+        <i class="fas fa-search" style="font-size:3rem; color:var(--neutral-400); margin-bottom:16px;"></i>
+        <h3>No matching found items located</h3>
+        <p style="color:var(--neutral-500); margin-top:8px;">Try searching for a different keyword or select another category.</p>
+        <a href="{{ url_for('main.found_items') }}" class="btn btn-secondary" style="margin-top:16px;">Reset Search</a>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination Controls -->
+  {% if total_pages > 1 %}
+    <div style="display:flex; justify-content:center; align-items:center; gap:12px; margin-top:40px;">
+      {% if page > 1 %}
+        <a href="{{ url_for('main.found_items', page=page-1, category=current_category, search=search_query) }}" class="btn btn-sm btn-secondary">
+          <i class="fas fa-chevron-left"></i> Previous
+        </a>
+      {% endif %}
+
+      <span style="font-size:0.9rem; font-weight:600; color:var(--neutral-700);">Page {{ page }} of {{ total_pages }}</span>
+
+      {% if page < total_pages %}
+        <a href="{{ url_for('main.found_items', page=page+1, category=current_category, search=search_query) }}" class="btn btn-sm btn-secondary">
+          Next <i class="fas fa-chevron-right"></i>
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

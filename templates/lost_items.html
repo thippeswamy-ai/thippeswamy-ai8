@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Reported Lost Items Gallery | College Lost & Found System{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div style="text-align:center; margin-bottom:32px;">
+    <h1 class="section-title"><i class="fas fa-exclamation-triangle" style="color:var(--accent-amber);"></i> Reported Lost Items Directory</h1>
+    <p class="section-subtitle">Browse through all missing items reported by students and staff. Have you found any of these belonging items on campus?</p>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div class="filter-bar-card">
+    <div class="filter-grid">
+      
+      <!-- Search Input -->
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="lostSearchInput" class="form-control" placeholder="Search by item name, description, or location..." value="{{ search_query }}">
+      </div>
+
+      <!-- Category Filter Chips -->
+      <div class="category-chips" id="lostCategoryChips">
+        {% for cat in categories %}
+          <a href="{{ url_for('main.lost_items', category=cat, search=search_query) }}" class="chip {% if current_category == cat %}active{% endif %}">
+            {{ cat }}
+          </a>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Items Counter -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <div style="font-size:0.95rem; color:var(--neutral-600); font-weight:500;">
+      Showing <strong>{{ items|length }}</strong> of <strong>{{ total_count }}</strong> reported lost items
+    </div>
+    {% if current_category != 'All' or search_query %}
+      <a href="{{ url_for('main.lost_items') }}" class="btn btn-sm btn-reset"><i class="fas fa-times"></i> Clear Filters</a>
+    {% endif %}
+  </div>
+
+  <!-- Lost Items Grid -->
+  <div class="cards-grid" id="lostItemsGrid">
+    {% for item in items %}
+      <div class="item-card" style="border-top: 3px solid var(--accent-amber);" data-title="{{ item.item_name }}" data-category="{{ item.category }}" data-desc="{{ item.description }}">
+        <div class="card-img-wrapper">
+          <span class="card-category-badge">{{ item.category }}</span>
+          <span class="card-status-badge" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a;">Active Report</span>
+          <img src="{% if item.image_path %}{{ url_for('static', filename='uploads/' + item.image_path) }}{% else %}{{ url_for('static', filename='images/placeholder.svg') }}{% endif %}" alt="{{ item.item_name }}">
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">{{ item.item_name }}</h3>
+          <p class="card-description">{{ item.description }}</p>
+          
+          <div class="card-meta-list">
+            <div class="card-meta-item">
+              <i class="fas fa-map-marker-alt" style="color:var(--accent-amber);"></i> <span>Lost near: <strong>{{ item.location_lost }}</strong></span>
+            </div>
+            <div class="card-meta-item">
+              <i class="far fa-calendar-alt"></i> <span>Date Lost: <strong>{{ item.date_lost }}</strong></span>
+            </div>
+            <div class="card-meta-item">
+              <i class="fas fa-user"></i> <span>Student: <strong>{{ item.student_name }}</strong> ({{ item.department }})</span>
+            </div>
+          </div>
+
+          <div class="card-footer" style="flex-direction:column; gap:8px;">
+            <a href="{{ url_for('main.upload_found') }}" class="btn btn-sm btn-outline-primary" style="width:100%;">
+              <i class="fas fa-hand-holding-heart"></i> Found This Item? Upload Here
+            </a>
+            {% if session.get('admin_logged_in') %}
+              <form action="{{ url_for('admin.delete_item', item_type='lost', item_id=item.id) }}" method="POST" style="width:100%;" onsubmit="return confirm('Admin: Delete Lost Item Report #{{ item.id }}?');">
+                <button type="submit" class="btn btn-sm btn-outline-danger" style="width:100%;">
+                  <i class="fas fa-trash"></i> Delete Report (Admin)
+                </button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div id="noResultsMessage" style="grid-column: 1/-1; text-align:center; padding:60px; background:var(--white); border-radius:var(--radius-lg); border:1px solid var(--neutral-200);">
+        <i class="fas fa-search-minus" style="font-size:3rem; color:var(--neutral-400); margin-bottom:16px;"></i>
+        <h3>No matching lost item reports located</h3>
+        <p style="color:var(--neutral-500); margin-top:8px;">Try searching for a different keyword or select another category.</p>
+        <a href="{{ url_for('main.lost_items') }}" class="btn btn-secondary" style="margin-top:16px;">Reset Search</a>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination Controls -->
+  {% if total_pages > 1 %}
+    <div style="display:flex; justify-content:center; align-items:center; gap:12px; margin-top:40px;">
+      {% if page > 1 %}
+        <a href="{{ url_for('main.lost_items', page=page-1, category=current_category, search=search_query) }}" class="btn btn-sm btn-secondary">
+          <i class="fas fa-chevron-left"></i> Previous
+        </a>
+      {% endif %}
+
+      <span style="font-size:0.9rem; font-weight:600; color:var(--neutral-700);">Page {{ page }} of {{ total_pages }}</span>
+
+      {% if page < total_pages %}
+        <a href="{{ url_for('main.lost_items', page=page+1, category=current_category, search=search_query) }}" class="btn btn-sm btn-secondary">
+          Next <i class="fas fa-chevron-right"></i>
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

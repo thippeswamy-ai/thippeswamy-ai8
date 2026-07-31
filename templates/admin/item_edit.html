@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ item_type|title }} Item #{{ item.id }} | Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="form-card">
+    <div class="form-header">
+      <h2><i class="fas fa-edit" style="color:var(--primary-600);"></i> Edit {{ item_type|title }} Record #{{ item.id }}</h2>
+      <p>Update record details, category, location, or status</p>
+    </div>
+
+    <form action="{{ url_for('admin.edit_item', item_type=item_type, item_id=item.id) }}" method="POST">
+      <div class="form-grid">
+        
+        <div class="form-group">
+          <label class="form-label" for="item_name">Item Name <span class="required">*</span></label>
+          <input type="text" id="item_name" name="item_name" class="form-control" value="{{ item.item_name }}" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="category">Category <span class="required">*</span></label>
+          <select id="category" name="category" class="form-control" required>
+            <option value="Electronics" {% if item.category == 'Electronics' %}selected{% endif %}>Electronics &amp; Gadgets</option>
+            <option value="Personal Accessories" {% if item.category == 'Personal Accessories' %}selected{% endif %}>Personal Accessories</option>
+            <option value="Wallets & Cards" {% if item.category == 'Wallets & Cards' %}selected{% endif %}>Wallets &amp; Cards</option>
+            <option value="Stationery & Books" {% if item.category == 'Stationery & Books' %}selected{% endif %}>Stationery &amp; Books</option>
+            <option value="Keys" {% if item.category == 'Keys' %}selected{% endif %}>Keys</option>
+            <option value="Clothing" {% if item.category == 'Clothing' %}selected{% endif %}>Clothing</option>
+            <option value="Documents" {% if item.category == 'Documents' %}selected{% endif %}>Documents</option>
+            <option value="Other" {% if item.category == 'Other' %}selected{% endif %}>Other</option>
+          </select>
+        </div>
+
+        {% if item_type == 'lost' %}
+          <div class="form-group">
+            <label class="form-label" for="location_lost">Location Lost <span class="required">*</span></label>
+            <input type="text" id="location_lost" name="location_lost" class="form-control" value="{{ item.location_lost }}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="date_lost">Date Lost <span class="required">*</span></label>
+            <input type="date" id="date_lost" name="date_lost" class="form-control" value="{{ item.date_lost }}" required>
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label" for="status">Status <span class="required">*</span></label>
+            <select id="status" name="status" class="form-control" required>
+              <option value="Active" {% if item.status == 'Active' %}selected{% endif %}>Active (Searching)</option>
+              <option value="Resolved" {% if item.status == 'Resolved' %}selected{% endif %}>Resolved (Found/Closed)</option>
+            </select>
+          </div>
+        {% else %}
+          <div class="form-group">
+            <label class="form-label" for="place_found">Place Found <span class="required">*</span></label>
+            <input type="text" id="place_found" name="place_found" class="form-control" value="{{ item.place_found }}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="date_found">Date Found <span class="required">*</span></label>
+            <input type="date" id="date_found" name="date_found" class="form-control" value="{{ item.date_found }}" required>
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label" for="status">Status <span class="required">*</span></label>
+            <select id="status" name="status" class="form-control" required>
+              <option value="Available" {% if item.status == 'Available' %}selected{% endif %}>Available for Claim</option>
+              <option value="Claimed" {% if item.status == 'Claimed' %}selected{% endif %}>Claimed &amp; Handed Over</option>
+            </select>
+          </div>
+        {% endif %}
+
+        <div class="form-group full-width">
+          <label class="form-label" for="description">Description <span class="required">*</span></label>
+          <textarea id="description" name="description" class="form-control" required>{{ item.description }}</textarea>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <a href="javascript:history.back()" class="btn btn-reset">Cancel</a>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}

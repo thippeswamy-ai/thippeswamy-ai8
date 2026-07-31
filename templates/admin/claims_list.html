@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Ownership Claims | Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container">
+  
+  <div class="admin-header">
+    <div>
+      <h1 style="font-family:var(--font-heading); font-size:1.8rem; font-weight:800; color:var(--neutral-900);">
+        <i class="fas fa-file-signature" style="color:var(--primary-600);"></i> Review Ownership Claims
+      </h1>
+      <p style="color:var(--neutral-500); font-size:0.9rem;">Verify proof of ownership submitted by students to approve or reject item returns.</p>
+    </div>
+
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-sm btn-secondary">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar-card">
+    <form action="{{ url_for('admin.view_claims') }}" method="GET" style="display:flex; gap:16px; align-items:center;">
+      <label style="font-weight:600; font-size:0.9rem; color:var(--neutral-700);">Filter by Claim Status:</label>
+      <select name="status" class="form-control" style="width:200px;" onchange="this.form.submit()">
+        <option value="">All Claims</option>
+        <option value="Pending" {% if status == 'Pending' %}selected{% endif %}>Pending Verification</option>
+        <option value="Approved" {% if status == 'Approved' %}selected{% endif %}>Approved (Handed Over)</option>
+        <option value="Rejected" {% if status == 'Rejected' %}selected{% endif %}>Rejected</option>
+      </select>
+      {% if status %}
+        <a href="{{ url_for('admin.view_claims') }}" class="btn btn-reset btn-sm">Clear Filter</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Claims List Cards -->
+  <div style="display:flex; flex-direction:column; gap:24px;">
+    {% for claim in claims %}
+      <div style="background:var(--white); border-radius:var(--radius-lg); border:1px solid var(--neutral-200); padding:28px; box-shadow:var(--shadow-md);">
+        
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; border-bottom:1px solid var(--neutral-100); padding-bottom:12px;">
+          <div>
+            <span style="font-size:0.8rem; font-weight:700; color:var(--neutral-500);">CLAIM ID #{{ claim.id }}</span>
+            <h3 style="font-family:var(--font-heading); font-size:1.3rem; color:var(--neutral-900); margin-top:2px;">
+              Claim for: <a href="{{ url_for('main.item_detail', item_id=claim.found_item_id) }}" target="_blank" style="color:var(--primary-600);">{{ claim.item_name }}</a>
+            </h3>
+          </div>
+          <div>
+            <span class="card-status-badge {% if claim.status == 'Pending' %}badge-active{% elif claim.status == 'Approved' %}badge-available{% else %}badge-claimed{% endif %}" style="font-size:0.9rem; padding:6px 16px;">
+              Status: {{ claim.status }}
+            </span>
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-bottom:20px;">
+          
+          <!-- Claimant Details -->
+          <div style="background:var(--neutral-50); padding:16px; border-radius:var(--radius-md); border:1px solid var(--neutral-200);">
+            <h4 style="font-family:var(--font-heading); color:var(--primary-900); font-size:0.95rem; margin-bottom:8px;">
+              <i class="fas fa-user-graduate"></i> Claimant Information
+            </h4>
+            <p style="font-size:0.875rem; margin-bottom:4px;"><strong>Name:</strong> {{ claim.claimant_name }}</p>
+            <p style="font-size:0.875rem; margin-bottom:4px;"><strong>Roll No:</strong> {{ claim.roll_number }}</p>
+            <p style="font-size:0.875rem; margin-bottom:4px;"><strong>Department:</strong> {{ claim.department }}</p>
+            <p style="font-size:0.875rem;"><strong>Mobile Contact:</strong> <a href="tel:{{ claim.mobile }}" style="color:var(--primary-600); font-weight:600;"><i class="fas fa-phone"></i> {{ claim.mobile }}</a></p>
+          </div>
+
+          <!-- Proof Details -->
+          <div style="background:var(--primary-50); padding:16px; border-radius:var(--radius-md); border:1px solid var(--primary-200);">
+            <h4 style="font-family:var(--font-heading); color:var(--primary-900); font-size:0.95rem; margin-bottom:8px;">
+              <i class="fas fa-certificate"></i> Submitted Proof of Ownership
+            </h4>
+            <p style="font-size:0.875rem; color:var(--neutral-800); white-space:pre-line; margin-bottom:10px;">{{ claim.proof_ownership }}</p>
+            {% if claim.description %}
+              <p style="font-size:0.8rem; color:var(--neutral-600);"><strong>Additional Description:</strong> {{ claim.description }}</p>
+            {% endif %}
+            {% if claim.proof_image %}
+              <div style="margin-top:10px;">
+                <a href="{{ url_for('static', filename='uploads/' + claim.proof_image) }}" target="_blank" class="btn btn-sm btn-secondary">
+                  <i class="fas fa-image"></i> View Attachment Proof
+                </a>
+              </div>
+            {% endif %}
+          </div>
+
+        </div>
+
+        {% if claim.admin_notes %}
+          <div style="background:#fffbe0; border-left:4px solid var(--accent-amber); padding:10px 16px; border-radius:var(--radius-sm); font-size:0.85rem; margin-bottom:16px;">
+            <strong>Admin Decision Note:</strong> {{ claim.admin_notes }}
+          </div>
+        {% endif %}
+
+        <!-- Action Controls -->
+        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--neutral-200); padding-top:16px;">
+          <small style="color:var(--neutral-500);">Submitted on: {{ claim.created_at }}</small>
+          
+          <div style="display:flex; gap:10px;">
+            {% if claim.status == 'Pending' %}
+              <!-- Approve Action -->
+              <form action="{{ url_for('admin.claim_action', claim_id=claim.id) }}" method="POST" style="display:inline;">
+                <input type="hidden" name="action" value="Approved">
+                <input type="hidden" name="admin_notes" value="Proof verified by Campus Security Desk. Item approved for handover.">
+                <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Approve this claim? This will mark the Found Item as Claimed.');">
+                  <i class="fas fa-check"></i> Approve Claim
+                </button>
+              </form>
+
+              <!-- Reject Action -->
+              <form action="{{ url_for('admin.claim_action', claim_id=claim.id) }}" method="POST" style="display:inline;">
+                <input type="hidden" name="action" value="Rejected">
+                <input type="hidden" name="admin_notes" value="Insufficient proof of ownership provided.">
+                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Reject this claim?');">
+                  <i class="fas fa-times"></i> Reject Claim
+                </button>
+              </form>
+            {% endif %}
+
+            <form action="{{ url_for('admin.delete_item', item_type='claim', item_id=claim.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this claim entry from database?');">
+              <button type="submit" class="btn btn-sm btn-reset" title="Delete record">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    {% else %}
+      <div style="text-align:center; padding:60px; background:var(--white); border-radius:var(--radius-lg); border:1px solid var(--neutral-200);">
+        <i class="fas fa-clipboard-check" style="font-size:3rem; color:var(--neutral-400); margin-bottom:12px;"></i>
+        <h3>No ownership claims found</h3>
+        <p style="color:var(--neutral-500); margin-top:6px;">Claims submitted by students will appear here for admin review.</p>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

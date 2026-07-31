@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}{{ item.item_name }} - Details | College Lost & Found System{% endblock %}
+
+{% block content %}
+<div class="container">
+  
+  <div style="margin-bottom:20px;">
+    <a href="{{ url_for('main.found_items') }}" class="btn btn-sm btn-secondary">
+      <i class="fas fa-arrow-left"></i> Back to Found Items Directory
+    </a>
+  </div>
+
+  <div class="detail-layout">
+    
+    <!-- Left Column: Large Image -->
+    <div class="detail-img-container">
+      <img src="{% if item.image_path %}{{ url_for('static', filename='uploads/' + item.image_path) }}{% else %}{{ url_for('static', filename='images/placeholder.svg') }}{% endif %}" alt="{{ item.item_name }}">
+    </div>
+
+    <!-- Right Column: Metadata & Claim Action -->
+    <div class="detail-info">
+      <div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <span class="detail-header-badge" style="background:var(--primary-100); color:var(--primary-800);">
+            <i class="fas fa-tag"></i> {{ item.category }}
+          </span>
+          <span class="detail-header-badge {% if item.status == 'Available' %}badge-available{% else %}badge-claimed{% endif %}">
+            {{ item.status }}
+          </span>
+        </div>
+
+        <h1 class="detail-title">{{ item.item_name }}</h1>
+
+        <div class="detail-description-box">
+          <h4 style="font-family:var(--font-heading); margin-bottom:6px; color:var(--neutral-900);">Description:</h4>
+          <p>{{ item.description }}</p>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:24px;">
+          <div class="card-meta-item" style="font-size:1rem;">
+            <i class="fas fa-map-marker-alt" style="font-size:1.2rem; color:var(--primary-600);"></i>
+            <span><strong>Place Found:</strong> {{ item.place_found }}</span>
+          </div>
+          <div class="card-meta-item" style="font-size:1rem;">
+            <i class="far fa-calendar-alt" style="font-size:1.2rem; color:var(--primary-600);"></i>
+            <span><strong>Date Found:</strong> {{ item.date_found }}</span>
+          </div>
+        </div>
+
+        <!-- Finder Info Card -->
+        <div class="finder-info-card">
+          <h4><i class="fas fa-user-shield"></i> Finder Information</h4>
+          <p style="font-size:0.9rem; color:var(--neutral-700); margin-bottom:4px;">
+            <strong>Uploaded By:</strong> {{ item.finder_name }}
+          </p>
+          <p style="font-size:0.9rem; color:var(--neutral-700); margin-bottom:4px;">
+            <strong>Department:</strong> {{ item.department }}
+          </p>
+          <p style="font-size:0.9rem; color:var(--neutral-700);">
+            <strong>Finder Contact:</strong> +91 {{ item.mobile }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display:flex; gap:16px;">
+        {% if item.status == 'Available' %}
+          <button type="button" class="btn btn-primary btn-lg" style="flex:1;" data-modal-target="claimModal">
+            <i class="fas fa-hand-holding"></i> Claim This Item
+          </button>
+        {% else %}
+          <button type="button" class="btn btn-secondary btn-lg" style="flex:1;" disabled>
+            <i class="fas fa-check-double"></i> Item Already Claimed
+          </button>
+        {% endif %}
+      </div>
+
+      <!-- Admin Controls (Visible when logged in as Admin) -->
+      {% if session.get('admin_logged_in') %}
+        <div style="background:#fef2f2; border:1px solid #fca5a5; padding:16px; border-radius:var(--radius-md); margin-top:20px; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.9rem; font-weight:700; color:#991b1b;"><i class="fas fa-user-shield"></i> Admin Actions</span>
+          <div style="display:flex; gap:10px;">
+            <a href="{{ url_for('admin.edit_item', item_type='found', item_id=item.id) }}" class="btn btn-sm btn-secondary">
+              <i class="fas fa-edit"></i> Edit Record
+            </a>
+            <form action="{{ url_for('admin.delete_item', item_type='found', item_id=item.id) }}" method="POST" onsubmit="return confirm('Admin: Are you sure you want to permanently delete this Found Item record?');">
+              <button type="submit" class="btn btn-sm btn-danger">
+                <i class="fas fa-trash"></i> Delete Item
+              </button>
+            </form>
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+<!-- Claim Item Modal Window -->
+<div class="modal-overlay" id="claimModal">
+  <div class="modal-card">
+    <button class="modal-close-btn" data-modal-close>&times;</button>
+    
+    <div style="text-align:center; margin-bottom:24px;">
+      <h3 style="font-family:var(--font-heading); font-size:1.6rem; color:var(--neutral-900);">Submit Ownership Claim</h3>
+      <p style="font-size:0.9rem; color:var(--neutral-500);">Provide proof of ownership for "{{ item.item_name }}"</p>
+    </div>
+
+    <form action="{{ url_for('main.claim_item', item_id=item.id) }}" method="POST" enctype="multipart/form-data" data-validate="true" id="claimForm">
+      
+      <div class="form-group" style="margin-bottom:16px;">
+        <label class="form-label" for="claimant_name">Your Full Name <span class="required">*</span></label>
+        <input type="text" id="claimant_name" name="claimant_name" class="form-control" placeholder="e.g. Ananya Roy" required>
+      </div>
+
+      <div class="form-grid" style="margin-bottom:16px;">
+        <div class="form-group">
+          <label class="form-label" for="roll_number">Roll No / ID <span class="required">*</span></label>
+          <input type="text" id="roll_number" name="roll_number" class="form-control" placeholder="e.g. EC-2023-012" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="department">Department <span class="required">*</span></label>
+          <input type="text" id="department" name="department" class="form-control" placeholder="e.g. Electronics" required>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:16px;">
+        <label class="form-label" for="mobile">Mobile Number (10 digits) <span class="required">*</span></label>
+        <input type="tel" id="mobile" name="mobile" class="form-control" placeholder="e.g. 9123456789" pattern="[0-9]{10}" required>
+      </div>
+
+      <div class="form-group" style="margin-bottom:16px;">
+        <label class="form-label" for="proof_ownership">Proof of Ownership <span class="required">*</span></label>
+        <textarea id="proof_ownership" name="proof_ownership" class="form-control" placeholder="Describe unique features, bill serial number, passcode pattern, lock screen photo description, wallpaper, or confidential mark..." required></textarea>
+      </div>
+
+      <div class="form-group" style="margin-bottom:20px;">
+        <label class="form-label" for="description">Additional Notes (Optional)</label>
+        <input type="text" id="description" name="description" class="form-control" placeholder="When and where you lost it, purchase date, etc.">
+      </div>
+
+      <div class="form-group" style="margin-bottom:24px;">
+        <label class="form-label">Upload Proof Image / Bill (Optional)</label>
+        <input type="file" name="proof_image" class="form-control" accept="image/*">
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%;">
+        <i class="fas fa-paper-plane"></i> Submit Claim to Admin
+      </button>
+
+    </form>
+  </div>
+</div>
+{% endblock %}

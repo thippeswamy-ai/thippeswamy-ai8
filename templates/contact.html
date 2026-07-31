@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Contact Desk | College Lost & Found System{% endblock %}
+{% block content %}
+<div class="container" style="max-width:900px;">
+  <div class="form-card">
+    <div class="form-header">
+      <h2><i class="fas fa-headset" style="color:var(--primary-600);"></i> Contact Support Desk</h2>
+      <p>Need urgent assistance regarding a high-value lost item or claim verification?</p>
+    </div>
+
+    <div class="form-grid" style="margin-bottom:32px;">
+      <div style="background:var(--primary-50); border:1px solid var(--primary-200); padding:24px; border-radius:var(--radius-lg);">
+        <h4 style="font-family:var(--font-heading); color:var(--primary-900); font-size:1.1rem; margin-bottom:12px;"><i class="fas fa-building"></i> Security Control Room</h4>
+        <p style="font-size:0.9rem; color:var(--neutral-700); margin-bottom:6px;">Main Administrative Block, Ground Floor</p>
+        <p style="font-size:0.9rem; color:var(--neutral-700); margin-bottom:6px;"><strong>Helpline:</strong> +91 98765 43210</p>
+        <p style="font-size:0.9rem; color:var(--neutral-700);"><strong>Hours:</strong> Mon - Sat: 8:00 AM - 6:00 PM</p>
+      </div>
+
+      <div style="background:var(--neutral-100); border:1px solid var(--neutral-300); padding:24px; border-radius:var(--radius-lg);">
+        <h4 style="font-family:var(--font-heading); color:var(--neutral-900); font-size:1.1rem; margin-bottom:12px;"><i class="fas fa-envelope"></i> Digital Helpdesk</h4>
+        <p style="font-size:0.9rem; color:var(--neutral-700); margin-bottom:6px;"><strong>Email:</strong> support-lostfound@college.edu</p>
+        <p style="font-size:0.9rem; color:var(--neutral-700); margin-bottom:6px;"><strong>Admin Office:</strong> Dean of Student Welfare Desk</p>
+        <p style="font-size:0.9rem; color:var(--neutral-700);">Response time: Within 24 Hours</p>
+      </div>
+    </div>
+
+    <form onsubmit="event.preventDefault(); showToast('Thank you! Your message has been sent to Campus Support Desk.', 'success'); this.reset();">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input type="text" class="form-control" placeholder="Full Name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-control" placeholder="name@student.college.edu" required>
+        </div>
+        <div class="form-group full-width">
+          <label class="form-label">Subject / Query</label>
+          <input type="text" class="form-control" placeholder="e.g. Urgent query about Lost Wallet #12" required>
+        </div>
+        <div class="form-group full-width">
+          <label class="form-label">Message</label>
+          <textarea class="form-control" placeholder="Describe your query in detail..." required></textarea>
+        </div>
+      </div>
+      <div style="margin-top:20px; text-align:right;">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Send Message</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

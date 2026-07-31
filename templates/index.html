@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Home | College Lost Things and Found System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-container">
+    <div class="hero-content">
+      <div class="hero-pill">
+        <i class="fas fa-bullhorn"></i> Campus Lost &amp; Found Portal
+      </div>
+      <h1 class="hero-title">
+        Welcome to <strong>Arts College</strong><br>
+        <span class="highlight">Lost and Found Management System</span>
+      </h1>
+      <p class="hero-description">
+        Fast, transparent, and secure lost-and-found tracking system for students and faculty. Report missing belongings or register items found across campus.
+      </p>
+
+      <!-- Three Large Buttons -->
+      <div class="hero-action-buttons">
+        <a href="{{ url_for('main.report_lost') }}" class="action-card-btn lost" id="btnReportLost">
+          <div class="icon-wrapper">
+            <i class="fas fa-search-location"></i>
+          </div>
+          <h3>Lost Item</h3>
+          <p>File a report for your missing belongings</p>
+        </a>
+
+        <a href="{{ url_for('main.found_items') }}" class="action-card-btn found" id="btnBrowseFound">
+          <div class="icon-wrapper">
+            <i class="fas fa-boxes-stacked"></i>
+          </div>
+          <h3>Found Items</h3>
+          <p>Browse &amp; claim items found on campus</p>
+        </a>
+
+        <a href="{{ url_for('main.upload_found') }}" class="action-card-btn upload" id="btnUploadFound">
+          <div class="icon-wrapper">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
+          <h3>Upload Found Item</h3>
+          <p>Submit item details found in college premises</p>
+        </a>
+      </div>
+    </div>
+
+    <!-- Hero Illustration / Graphic -->
+    <div class="hero-graphic">
+      <div class="hero-graphic-card">
+        <div style="text-align:center; padding: 20px 0;">
+          <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Campus Portal" style="max-height:120px; margin: 0 auto 16px auto;">
+          <h4 style="font-size:1.3rem; font-family:var(--font-heading); color:var(--neutral-900);">Trusted Campus Recovery Desk</h4>
+          <p style="font-size:0.9rem; color:var(--neutral-500); margin-top:6px;">Connecting honest finders with verified owners seamlessly.</p>
+        </div>
+
+        <div class="floating-badge badge-top">
+          <i class="fas fa-check-circle" style="color:var(--accent-emerald); font-size:1.4rem;"></i>
+          <div>
+            <div style="font-size:0.9rem; color:var(--neutral-900);">Verified Ownership</div>
+            <div style="font-size:0.75rem; color:var(--neutral-500);">Claim with proof</div>
+          </div>
+        </div>
+
+        <div class="floating-badge badge-bottom">
+          <i class="fas fa-bolt" style="color:var(--accent-amber); font-size:1.4rem;"></i>
+          <div>
+            <div style="font-size:0.9rem; color:var(--neutral-900);">Fast Notifications</div>
+            <div style="font-size:0.75rem; color:var(--neutral-500);">Direct admin verification</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Showcase -->
+<section class="stats-banner">
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="stat-number">{{ stats.total_found }}</div>
+      <div class="stat-label">Items Available</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number">{{ stats.total_lost }}</div>
+      <div class="stat-label">Active Lost Reports</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number">{{ stats.pending_claims }}</div>
+      <div class="stat-label">Pending Claims</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number">{{ stats.reunited_count }}</div>
+      <div class="stat-label">Items Reunited</div>
+    </div>
+  </div>
+</section>
+
+<!-- Recent Found Items Grid -->
+<section class="container">
+  <h2 class="section-title">Recently Found Items</h2>
+  <p class="section-subtitle">Items recently recovered across campus locations. Click to view full details and submit an ownership claim.</p>
+
+  <div class="cards-grid">
+    {% for item in recent_found %}
+      <div class="item-card">
+        <div class="card-img-wrapper">
+          <span class="card-category-badge">{{ item.category }}</span>
+          <span class="card-status-badge badge-available">Available</span>
+          <img src="{% if item.image_path %}{{ url_for('static', filename='uploads/' + item.image_path) }}{% else %}{{ url_for('static', filename='images/placeholder.svg') }}{% endif %}" alt="{{ item.item_name }}">
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">{{ item.item_name }}</h3>
+          <p class="card-description">{{ item.description }}</p>
+          <div class="card-meta-list">
+            <div class="card-meta-item">
+              <i class="fas fa-map-marker-alt"></i> <span>Found at: <strong>{{ item.place_found }}</strong></span>
+            </div>
+            <div class="card-meta-item">
+              <i class="far fa-calendar-alt"></i> <span>Date: <strong>{{ item.date_found }}</strong></span>
+            </div>
+            <div class="card-meta-item">
+              <i class="fas fa-user-edit"></i> <span>By: {{ item.finder_name }} ({{ item.department }})</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <a href="{{ url_for('main.item_detail', item_id=item.id) }}" class="btn btn-sm btn-primary" style="width:100%;">
+              <i class="fas fa-eye"></i> View Details &amp; Claim
+            </a>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div style="grid-column: 1/-1; text-align:center; padding:40px; background:var(--white); border-radius:var(--radius-lg); border:1px solid var(--neutral-200);">
+        <i class="fas fa-folder-open" style="font-size:3rem; color:var(--neutral-400); margin-bottom:12px;"></i>
+        <h3>No recent found items listed yet.</h3>
+        <p style="color:var(--neutral-500); margin-top:6px;">If you have found an item on campus, click below to upload it.</p>
+        <a href="{{ url_for('main.upload_found') }}" class="btn btn-primary" style="margin-top:16px;">Upload Found Item</a>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div style="text-align:center; margin-top:40px;">
+    <a href="{{ url_for('main.found_items') }}" class="btn btn-secondary btn-lg">
+      <i class="fas fa-search"></i> View All Found Items Grid
+    </a>
+  </div>
+</section>
+
+<!-- Recent Lost Items Grid -->
+<section class="container" style="margin-top: 60px; margin-bottom: 60px;">
+  <h2 class="section-title">Recently Reported Lost Items</h2>
+  <p class="section-subtitle">Belongings currently reported missing by campus students and staff. Have you seen any of these items?</p>
+
+  <div class="cards-grid">
+    {% for item in recent_lost %}
+      <div class="item-card" style="border-top: 3px solid var(--accent-amber);">
+        <div class="card-img-wrapper">
+          <span class="card-category-badge">{{ item.category }}</span>
+          <span class="card-status-badge" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a;">Active Report</span>
+          <img src="{% if item.image_path %}{{ url_for('static', filename='uploads/' + item.image_path) }}{% else %}{{ url_for('static', filename='images/placeholder.svg') }}{% endif %}" alt="{{ item.item_name }}">
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">{{ item.item_name }}</h3>
+          <p class="card-description">{{ item.description }}</p>
+          <div class="card-meta-list">
+            <div class="card-meta-item">
+              <i class="fas fa-map-marker-alt" style="color:var(--accent-amber);"></i> <span>Lost near: <strong>{{ item.location_lost }}</strong></span>
+            </div>
+            <div class="card-meta-item">
+              <i class="far fa-calendar-alt"></i> <span>Date Lost: <strong>{{ item.date_lost }}</strong></span>
+            </div>
+            <div class="card-meta-item">
+              <i class="fas fa-user"></i> <span>Student: <strong>{{ item.student_name }}</strong> ({{ item.department }})</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <a href="{{ url_for('main.upload_found') }}" class="btn btn-sm btn-outline-primary" style="width:100%;">
+              <i class="fas fa-hand-holding-heart"></i> Found This? Upload Item
+            </a>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div style="grid-column: 1/-1; text-align:center; padding:40px; background:var(--white); border-radius:var(--radius-lg); border:1px solid var(--neutral-200);">
+        <i class="fas fa-search-minus" style="font-size:3rem; color:var(--neutral-400); margin-bottom:12px;"></i>
+        <h3>No active lost reports right now.</h3>
+        <p style="color:var(--neutral-500); margin-top:6px;">Have you misplaced a personal item on campus? Report it online.</p>
+        <a href="{{ url_for('main.report_lost') }}" class="btn btn-primary" style="margin-top:16px;">Report Lost Item</a>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin-top:40px;">
+    <a href="{{ url_for('main.lost_items') }}" class="btn btn-secondary btn-lg">
+      <i class="fas fa-search-location"></i> View All Reported Lost Items
+    </a>
+    <a href="{{ url_for('main.report_lost') }}" class="btn btn-primary btn-lg">
+      <i class="fas fa-plus-circle"></i> File a New Lost Item Report
+    </a>
+  </div>
+</section>
+{% endblock %}

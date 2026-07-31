@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Found Items | Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container">
+  
+  <div class="admin-header">
+    <div>
+      <h1 style="font-family:var(--font-heading); font-size:1.8rem; font-weight:800; color:var(--neutral-900);">
+        <i class="fas fa-boxes-stacked" style="color:var(--primary-600);"></i> Found Items Inventory Management
+      </h1>
+      <p style="color:var(--neutral-500); font-size:0.9rem;">Manage all items logged into the campus security repository.</p>
+    </div>
+
+    <div style="display:flex; gap:10px;">
+      <a href="{{ url_for('admin.upload_found_admin') }}" class="btn btn-sm btn-primary">
+        <i class="fas fa-plus-circle"></i> Upload New Found Item
+      </a>
+      <a href="{{ url_for('admin.dashboard') }}" class="btn btn-sm btn-secondary">
+        <i class="fas fa-arrow-left"></i> Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar-card">
+    <form action="{{ url_for('admin.view_found') }}" method="GET" class="filter-grid">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" name="search" class="form-control" placeholder="Search by item name, description, place..." value="{{ search }}">
+      </div>
+
+      <div style="display:flex; gap:12px; align-items:center;">
+        <select name="status" class="form-control" style="width:160px;">
+          <option value="">All Statuses</option>
+          <option value="Available" {% if status == 'Available' %}selected{% endif %}>Available</option>
+          <option value="Claimed" {% if status == 'Claimed' %}selected{% endif %}>Claimed</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-filter"></i> Filter</button>
+        {% if search or status %}
+          <a href="{{ url_for('admin.view_found') }}" class="btn btn-reset btn-sm">Clear</a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  <div class="admin-table-wrapper">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Photo</th>
+          <th>Item Name</th>
+          <th>Finder Details</th>
+          <th>Department &amp; Contact</th>
+          <th>Place Found</th>
+          <th>Date Found</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+          <tr>
+            <td><strong>#{{ item.id }}</strong></td>
+            <td>
+              <img src="{% if item.image_path %}{{ url_for('static', filename='uploads/' + item.image_path) }}{% else %}{{ url_for('static', filename='images/placeholder.svg') }}{% endif %}" class="table-thumbnail" alt="Thumb">
+            </td>
+            <td>
+              <strong>{{ item.item_name }}</strong> <br>
+              <span class="chip" style="font-size:0.7rem; padding:2px 8px;">{{ item.category }}</span>
+            </td>
+            <td><strong>{{ item.finder_name }}</strong></td>
+            <td>
+              {{ item.department }} <br>
+              <small><i class="fas fa-phone"></i> {{ item.mobile }}</small>
+            </td>
+            <td>{{ item.place_found }}</td>
+            <td>{{ item.date_found }}</td>
+            <td>
+              <span class="card-status-badge {% if item.status == 'Available' %}badge-available{% else %}badge-claimed{% endif %}">
+                {{ item.status }}
+              </span>
+            </td>
+            <td>
+              <div style="display:flex; gap:6px;">
+                <a href="{{ url_for('main.item_detail', item_id=item.id) }}" target="_blank" class="btn btn-sm btn-reset" title="View Public Page">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+                <a href="{{ url_for('admin.edit_item', item_type='found', item_id=item.id) }}" class="btn btn-sm btn-secondary" title="Edit">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <form action="{{ url_for('admin.delete_item', item_type='found', item_id=item.id) }}" method="POST" onsubmit="return confirm('Delete Found Item Record #{{ item.id }}? This action cannot be undone.');">
+                  <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="9" style="text-align:center; padding:32px; color:var(--neutral-500);">No found item records match your filter.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}

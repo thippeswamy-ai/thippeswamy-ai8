@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Found Item | College Lost & Found System{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="form-card">
+    <div class="form-header">
+      <h2><i class="fas fa-hand-holding-heart" style="color:var(--primary-600);"></i> Upload Found Item</h2>
+      <p>Thank you for being a responsible campus citizen! Register the details of the item you found below.</p>
+    </div>
+
+    <form action="{{ url_for('main.upload_found') }}" method="POST" enctype="multipart/form-data" data-validate="true" id="foundItemForm">
+      <div class="form-grid">
+        
+        <!-- Finder Name -->
+        <div class="form-group">
+          <label class="form-label" for="finder_name">Finder Name <span class="required">*</span></label>
+          <input type="text" id="finder_name" name="finder_name" class="form-control" placeholder="e.g. Priya Sharma" required>
+        </div>
+
+        <!-- Department -->
+        <div class="form-group">
+          <label class="form-label" for="department">Department / Staff Unit <span class="required">*</span></label>
+          <select id="department" name="department" class="form-control" required>
+            <option value="">Select Department</option>
+            <option value="Computer Science">Computer Science &amp; Engg</option>
+            <option value="Electronics">Electronics &amp; Comm Engg</option>
+            <option value="Mechanical Eng">Mechanical Engineering</option>
+            <option value="Civil Eng">Civil Engineering</option>
+            <option value="Electrical Eng">Electrical Engineering</option>
+            <option value="Management">Business Management / MBA</option>
+            <option value="Security Office">Campus Security Office</option>
+            <option value="Library Desk">Library Administration</option>
+            <option value="Other">Other Department</option>
+          </select>
+        </div>
+
+        <!-- Mobile Number -->
+        <div class="form-group">
+          <label class="form-label" for="mobile">Mobile Number (10 digits) <span class="required">*</span></label>
+          <input type="tel" id="mobile" name="mobile" class="form-control" placeholder="e.g. 9876543210" pattern="[0-9]{10}" required>
+        </div>
+
+        <!-- Item Name -->
+        <div class="form-group">
+          <label class="form-label" for="item_name">Item Name <span class="required">*</span></label>
+          <input type="text" id="item_name" name="item_name" class="form-control" placeholder="e.g. Stainless Steel Blue Hydro Flask" required>
+        </div>
+
+        <!-- Category -->
+        <div class="form-group">
+          <label class="form-label" for="category">Item Category <span class="required">*</span></label>
+          <select id="category" name="category" class="form-control" required>
+            <option value="">Select Category</option>
+            <option value="Electronics">Electronics &amp; Gadgets</option>
+            <option value="Personal Accessories">Personal Accessories (Watches, Water Bottles)</option>
+            <option value="Wallets & Cards">Wallets, Purses &amp; ID Cards</option>
+            <option value="Stationery & Books">Books, Notebooks &amp; Stationery</option>
+            <option value="Keys">Keys &amp; Keychain</option>
+            <option value="Clothing">Clothing &amp; Sports Gear</option>
+            <option value="Documents">Certificates &amp; Documents</option>
+            <option value="Other">Other Miscellaneous</option>
+          </select>
+        </div>
+
+        <!-- Place Found -->
+        <div class="form-group">
+          <label class="form-label" for="place_found">Place Found <span class="required">*</span></label>
+          <input type="text" id="place_found" name="place_found" class="form-control" placeholder="e.g. College Canteen Ground Floor Table 4" required>
+        </div>
+
+        <!-- Date Found -->
+        <div class="form-group">
+          <label class="form-label" for="date_found">Date Found <span class="required">*</span></label>
+          <input type="date" id="date_found" name="date_found" class="form-control" required>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group full-width">
+          <label class="form-label" for="description">Item Description <span class="required">*</span></label>
+          <textarea id="description" name="description" class="form-control" placeholder="Describe condition, color, branding, stickers, or specific features to help the owner identify it..." required></textarea>
+        </div>
+
+        <!-- Upload Image -->
+        <div class="form-group full-width">
+          <label class="form-label">Upload Item Photo</label>
+          <div class="upload-dropzone" id="imageDropzone">
+            <i class="fas fa-camera upload-icon"></i>
+            <div class="upload-text">Click or drag &amp; drop item photo here</div>
+            <div class="upload-hint">Supported formats: JPG, PNG, WEBP (Max 5MB)</div>
+            <input type="file" id="imageUploadInput" name="image" accept="image/*">
+          </div>
+          <div class="image-preview-wrapper" id="imagePreviewWrapper">
+            <img src="" id="imagePreviewImg" alt="Preview">
+            <div>
+              <div style="font-size:0.85rem; font-weight:600;" id="imagePreviewName">photo.jpg</div>
+              <div style="font-size:0.75rem; color:var(--accent-emerald);">Photo ready for upload</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="reset" class="btn btn-reset" id="resetFoundForm">
+          <i class="fas fa-undo"></i> Reset Form
+        </button>
+        <button type="submit" class="btn btn-primary" id="submitFoundForm">
+          <i class="fas fa-cloud-upload-alt"></i> Upload Found Item
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById('date_found').valueAsDate = new Date();
+</script>
+{% endblock %}

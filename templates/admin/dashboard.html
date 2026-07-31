@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | College Lost & Found System{% endblock %}
+
+{% block content %}
+<div class="container">
+  
+  <div class="admin-header">
+    <div>
+      <h1 style="font-family:var(--font-heading); font-size:2rem; font-weight:800; color:var(--neutral-900);">
+        <i class="fas fa-chart-line" style="color:var(--primary-600);"></i> Admin Management Control Panel
+      </h1>
+      <p style="color:var(--neutral-500); font-size:0.95rem;">
+        Logged in as <strong>{{ session.get('admin_username') }}</strong>
+        {% if session.get('admin_role') == 'super_admin' %}
+          <span class="chip" style="background:#fef3c7; color:#b45309; font-weight:700; font-size:0.75rem; margin-left:6px;"><i class="fas fa-crown"></i> Super Admin</span>
+        {% else %}
+          <span class="chip" style="background:var(--primary-100); color:var(--primary-800); font-weight:600; font-size:0.75rem; margin-left:6px;"><i class="fas fa-user-shield"></i> Admin</span>
+        {% endif %}
+      </p>
+    </div>
+
+    <div style="display:flex; gap:12px; align-items:center;">
+      {% if session.get('admin_role') == 'super_admin' %}
+        <a href="{{ url_for('admin.manage_admins') }}" class="btn btn-sm btn-secondary">
+          <i class="fas fa-users-cog"></i> Manage Admins
+        </a>
+      {% endif %}
+      <a href="{{ url_for('admin.upload_found_admin') }}" class="btn btn-sm btn-primary">
+        <i class="fas fa-plus"></i> Upload Found Item
+      </a>
+      <a href="{{ url_for('admin.logout') }}" class="btn btn-sm btn-outline-danger">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </a>
+    </div>
+  </div>
+
+  <!-- Metric Overview Cards -->
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:20px; margin-bottom:36px;">
+    
+    <div style="background:var(--white); padding:24px; border-radius:var(--radius-lg); border:1px solid var(--neutral-200); box-shadow:var(--shadow-md); display:flex; align-items:center; gap:20px;">
+      <div style="width:56px; height:56px; border-radius:var(--radius-md); background:#fef3c7; color:#b45309; display:flex; align-items:center; justify-content:center; font-size:1.6rem;">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <div>
+        <div style="font-size:2rem; font-weight:800; font-family:var(--font-heading); color:var(--neutral-900);">{{ stats.total_lost }}</div>
+        <div style="font-size:0.85rem; color:var(--neutral-500); font-weight:600; text-transform:uppercase;">Active Lost Reports</div>
+      </div>
+    </div>
+
+    <div style="background:var(--white); padding:24px; border-radius:var(--radius-lg); border:1px solid var(--neutral-200); box-shadow:var(--shadow-md); display:flex; align-items:center; gap:20px;">
+      <div style="width:56px; height:56px; border-radius:var(--radius-md); background:#dcfce7; color:#15803d; display:flex; align-items:center; justify-content:center; font-size:1.6rem;">
+        <i class="fas fa-boxes-stacked"></i>
+      </div>
+      <div>
+        <div style="font-size:2rem; font-weight:800; font-family:var(--font-heading); color:var(--neutral-900);">{{ stats.total_found }}</div>
+        <div style="font-size:0.85rem; color:var(--neutral-500); font-weight:600; text-transform:uppercase;">Found Items Available</div>
+      </div>
+    </div>
+
+    <div style="background:var(--white); padding:24px; border-radius:var(--radius-lg); border:1px solid var(--neutral-200); box-shadow:var(--shadow-md); display:flex; align-items:center; gap:20px;">
+      <div style="width:56px; height:56px; border-radius:var(--radius-md); background:#e0f2fe; color:#0284c7; display:flex; align-items:center; justify-content:center; font-size:1.6rem;">
+        <i class="fas fa-file-signature"></i>
+      </div>
+      <div>
+        <div style="font-size:2rem; font-weight:800; font-family:var(--font-heading); color:var(--neutral-900);">{{ stats.pending_claims }}</div>
+        <div style="font-size:0.85rem; color:var(--neutral-500); font-weight:600; text-transform:uppercase;">Pending Claims</div>
+      </div>
+    </div>
+
+    <div style="background:var(--white); padding:24px; border-radius:var(--radius-lg); border:1px solid var(--neutral-200); box-shadow:var(--shadow-md); display:flex; align-items:center; gap:20px;">
+      <div style="width:56px; height:56px; border-radius:var(--radius-md); background:#f3e8ff; color:#7e22ce; display:flex; align-items:center; justify-content:center; font-size:1.6rem;">
+        <i class="fas fa-handshake"></i>
+      </div>
+      <div>
+        <div style="font-size:2rem; font-weight:800; font-family:var(--font-heading); color:var(--neutral-900);">{{ stats.reunited_count }}</div>
+        <div style="font-size:0.85rem; color:var(--neutral-500); font-weight:600; text-transform:uppercase;">Reunited Items</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Quick Nav Tabs -->
+  <div style="display:flex; gap:12px; margin-bottom:24px; border-bottom:2px solid var(--neutral-200); pb:12px;">
+    <a href="{{ url_for('admin.dashboard') }}" class="chip active">Overview Dashboard</a>
+    <a href="{{ url_for('admin.view_claims') }}" class="chip">Manage Claims ({{ stats.pending_claims }} Pending)</a>
+    <a href="{{ url_for('admin.view_found') }}" class="chip">Found Items Inventory</a>
+    <a href="{{ url_for('admin.view_lost') }}" class="chip">Lost Items Reports</a>
+  </div>
+
+  <!-- Recent Pending Claims Section -->
+  <div style="margin-bottom:40px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h3 style="font-family:var(--font-heading); font-size:1.4rem; color:var(--neutral-900);">
+        <i class="fas fa-clock" style="color:var(--accent-amber);"></i> Pending Ownership Claims
+      </h3>
+      <a href="{{ url_for('admin.view_claims') }}" class="btn btn-sm btn-secondary">View All Claims</a>
+    </div>
+
+    <div class="admin-table-wrapper">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Claim ID</th>
+            <th>Item Name</th>
+            <th>Claimant Name</th>
+            <th>Department</th>
+            <th>Mobile</th>
+            <th>Ownership Proof</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for claim in recent_claims %}
+            <tr>
+              <td><strong>#{{ claim.id }}</strong></td>
+              <td>{{ claim.item_name }}</td>
+              <td>{{ claim.claimant_name }} <br><small style="color:var(--neutral-500);">Roll: {{ claim.roll_number }}</small></td>
+              <td>{{ claim.department }}</td>
+              <td>{{ claim.mobile }}</td>
+              <td><span title="{{ claim.proof_ownership }}">{{ claim.proof_ownership[:40] }}...</span></td>
+              <td>
+                <span class="card-status-badge {% if claim.status == 'Pending' %}badge-active{% elif claim.status == 'Approved' %}badge-available{% else %}badge-claimed{% endif %}">
+                  {{ claim.status }}
+                </span>
+              </td>
+              <td>
+                <div style="display:flex; gap:6px;">
+                  <a href="{{ url_for('admin.view_claims') }}" class="btn btn-sm btn-primary">Review</a>
+                  <form action="{{ url_for('admin.delete_item', item_type='claim', item_id=claim.id) }}" method="POST" onsubmit="return confirm('Delete claim #{{ claim.id }}?');">
+                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Claim">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="8" style="text-align:center; padding:24px; color:var(--neutral-500);">No pending claims at this moment.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Found Items Section -->
+  <div style="margin-bottom:40px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h3 style="font-family:var(--font-heading); font-size:1.4rem; color:var(--neutral-900);">
+        <i class="fas fa-boxes-stacked" style="color:var(--primary-600);"></i> Found Items Inventory
+      </h3>
+      <a href="{{ url_for('admin.view_found') }}" class="btn btn-sm btn-secondary">View All Found Items</a>
+    </div>
+
+    <div class="admin-table-wrapper">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Item Name</th>
+            <th>Category</th>
+            <th>Place Found</th>
+            <th>Date Found</th>
+            <th>Status</th>
+            <th>Admin Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in recent_found %}
+            <tr>
+              <td><strong>#{{ item.id }}</strong></td>
+              <td><strong>{{ item.item_name }}</strong></td>
+              <td><span class="chip" style="font-size:0.75rem;">{{ item.category }}</span></td>
+              <td>{{ item.place_found }}</td>
+              <td>{{ item.date_found }}</td>
+              <td>
+                <span class="card-status-badge {% if item.status == 'Available' %}badge-available{% else %}badge-claimed{% endif %}">
+                  {{ item.status }}
+                </span>
+              </td>
+              <td>
+                <div style="display:flex; gap:8px;">
+                  <a href="{{ url_for('admin.edit_item', item_type='found', item_id=item.id) }}" class="btn btn-sm btn-secondary" title="Edit">
+                    <i class="fas fa-edit"></i> Edit
+                  </a>
+                  <form action="{{ url_for('admin.delete_item', item_type='found', item_id=item.id) }}" method="POST" onsubmit="return confirm('Permanently delete Found Item #{{ item.id }} ({{ item.item_name }})?');">
+                    <button type="submit" class="btn btn-sm btn-danger" title="Delete Item">
+                      <i class="fas fa-trash"></i> Delete
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="7" style="text-align:center; padding:24px; color:var(--neutral-500);">No found items registered.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Lost Items Section -->
+  <div style="margin-bottom:40px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h3 style="font-family:var(--font-heading); font-size:1.4rem; color:var(--neutral-900);">
+        <i class="fas fa-exclamation-triangle" style="color:var(--accent-rose);"></i> Active Lost Item Reports
+      </h3>
+      <a href="{{ url_for('admin.view_lost') }}" class="btn btn-sm btn-secondary">View All Lost Reports</a>
+    </div>
+
+    <div class="admin-table-wrapper">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Item Name</th>
+            <th>Category</th>
+            <th>Student Name</th>
+            <th>Location Lost</th>
+            <th>Date Lost</th>
+            <th>Status</th>
+            <th>Admin Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in recent_lost %}
+            <tr>
+              <td><strong>#{{ item.id }}</strong></td>
+              <td><strong>{{ item.item_name }}</strong></td>
+              <td><span class="chip" style="font-size:0.75rem;">{{ item.category }}</span></td>
+              <td>{{ item.student_name }}</td>
+              <td>{{ item.location_lost }}</td>
+              <td>{{ item.date_lost }}</td>
+              <td>
+                <span class="card-status-badge {% if item.status == 'Active' %}badge-active{% else %}badge-available{% endif %}">
+                  {{ item.status }}
+                </span>
+              </td>
+              <td>
+                <div style="display:flex; gap:8px;">
+                  <a href="{{ url_for('admin.edit_item', item_type='lost', item_id=item.id) }}" class="btn btn-sm btn-secondary" title="Edit">
+                    <i class="fas fa-edit"></i> Edit
+                  </a>
+                  <form action="{{ url_for('admin.delete_item', item_type='lost', item_id=item.id) }}" method="POST" onsubmit="return confirm('Permanently delete Lost Report #{{ item.id }} ({{ item.item_name }})?');">
+                    <button type="submit" class="btn btn-sm btn-danger" title="Delete Report">
+                      <i class="fas fa-trash"></i> Delete
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="8" style="text-align:center; padding:24px; color:var(--neutral-500);">No active lost item reports.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

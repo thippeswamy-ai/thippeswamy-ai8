@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Found Item | Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="form-card">
+    <div class="form-header">
+      <h2><i class="fas fa-plus-circle" style="color:var(--primary-600);"></i> Admin Upload Found Item</h2>
+      <p>Log a recovered item directly into the campus lost &amp; found database.</p>
+    </div>
+
+    <form action="{{ url_for('admin.upload_found_admin') }}" method="POST" enctype="multipart/form-data" data-validate="true">
+      <div class="form-grid">
+        
+        <div class="form-group">
+          <label class="form-label" for="finder_name">Finder / Custodian Name</label>
+          <input type="text" id="finder_name" name="finder_name" class="form-control" value="Security Control Room" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="department">Department / Unit</label>
+          <input type="text" id="department" name="department" class="form-control" value="Campus Security" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="mobile">Security Helpline Mobile</label>
+          <input type="tel" id="mobile" name="mobile" class="form-control" value="9876543210" pattern="[0-9]{10}" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="item_name">Item Name <span class="required">*</span></label>
+          <input type="text" id="item_name" name="item_name" class="form-control" placeholder="e.g. Leather Jacket / Car Keys" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="category">Category <span class="required">*</span></label>
+          <select id="category" name="category" class="form-control" required>
+            <option value="">Select Category</option>
+            <option value="Electronics">Electronics &amp; Gadgets</option>
+            <option value="Personal Accessories">Personal Accessories</option>
+            <option value="Wallets & Cards">Wallets &amp; Cards</option>
+            <option value="Stationery & Books">Stationery &amp; Books</option>
+            <option value="Keys">Keys</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Documents">Documents</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="place_found">Place Found <span class="required">*</span></label>
+          <input type="text" id="place_found" name="place_found" class="form-control" placeholder="e.g. Sports Complex Pavilion" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="date_found">Date Found <span class="required">*</span></label>
+          <input type="date" id="date_found" name="date_found" class="form-control" required>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label" for="description">Detailed Description <span class="required">*</span></label>
+          <textarea id="description" name="description" class="form-control" placeholder="Full details of the item..." required></textarea>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Upload Item Photo</label>
+          <input type="file" name="image" class="form-control" accept="image/*">
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <a href="{{ url_for('admin.view_found') }}" class="btn btn-reset">Cancel</a>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-plus"></i> Add Found Item</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById('date_found').valueAsDate = new Date();
+</script>
+{% endblock %}

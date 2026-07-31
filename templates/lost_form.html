@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Report Lost Item | College Lost & Found System{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="form-card">
+    <div class="form-header">
+      <h2><i class="fas fa-exclamation-triangle" style="color:var(--accent-rose);"></i> Report Lost Item</h2>
+      <p>Submit your missing item details so campus security &amp; finders can notify you if found.</p>
+    </div>
+
+    <form action="{{ url_for('main.report_lost') }}" method="POST" enctype="multipart/form-data" data-validate="true" id="lostItemForm">
+      <div class="form-grid">
+        
+        <!-- Student Name -->
+        <div class="form-group">
+          <label class="form-label" for="student_name">Student / Staff Name <span class="required">*</span></label>
+          <input type="text" id="student_name" name="student_name" class="form-control" placeholder="e.g. Rahul Sharma" required>
+        </div>
+
+        <!-- Roll Number -->
+        <div class="form-group">
+          <label class="form-label" for="roll_number">Roll Number / Staff ID <span class="required">*</span></label>
+          <input type="text" id="roll_number" name="roll_number" class="form-control" placeholder="e.g. CS-2024-089" required>
+        </div>
+
+        <!-- Department -->
+        <div class="form-group">
+          <label class="form-label" for="department">Department <span class="required">*</span></label>
+          <select id="department" name="department" class="form-control" required>
+            <option value="">Select Department</option>
+            <option value="Computer Science">Computer Science &amp; Engg</option>
+            <option value="Electronics">Electronics &amp; Comm Engg</option>
+            <option value="Mechanical Eng">Mechanical Engineering</option>
+            <option value="Civil Eng">Civil Engineering</option>
+            <option value="Electrical Eng">Electrical Engineering</option>
+            <option value="Management">Business Management / MBA</option>
+            <option value="Sciences">Basic Sciences &amp; Humanities</option>
+            <option value="Other">Other Department</option>
+          </select>
+        </div>
+
+        <!-- Mobile Number -->
+        <div class="form-group">
+          <label class="form-label" for="mobile">Mobile Number (10 digits) <span class="required">*</span></label>
+          <input type="tel" id="mobile" name="mobile" class="form-control" placeholder="e.g. 9876543210" pattern="[0-9]{10}" required>
+        </div>
+
+        <!-- Item Name -->
+        <div class="form-group">
+          <label class="form-label" for="item_name">Item Name <span class="required">*</span></label>
+          <input type="text" id="item_name" name="item_name" class="form-control" placeholder="e.g. Black Sony Wireless Earbuds" required>
+        </div>
+
+        <!-- Item Category -->
+        <div class="form-group">
+          <label class="form-label" for="category">Item Category <span class="required">*</span></label>
+          <select id="category" name="category" class="form-control" required>
+            <option value="">Select Category</option>
+            <option value="Electronics">Electronics &amp; Gadgets</option>
+            <option value="Personal Accessories">Personal Accessories (Watches, Glasses)</option>
+            <option value="Wallets & Cards">Wallets, Purses &amp; ID Cards</option>
+            <option value="Stationery & Books">Books, Notebooks &amp; Stationery</option>
+            <option value="Keys">Keys &amp; Keychain</option>
+            <option value="Clothing">Clothing &amp; Sports Gear</option>
+            <option value="Documents">Certificates &amp; Documents</option>
+            <option value="Other">Other Miscellaneous</option>
+          </select>
+        </div>
+
+        <!-- Location Lost -->
+        <div class="form-group">
+          <label class="form-label" for="location_lost">Location Lost <span class="required">*</span></label>
+          <input type="text" id="location_lost" name="location_lost" class="form-control" placeholder="e.g. Near Library Reading Hall 2nd Floor" required>
+        </div>
+
+        <!-- Date Lost -->
+        <div class="form-group">
+          <label class="form-label" for="date_lost">Date Lost <span class="required">*</span></label>
+          <input type="date" id="date_lost" name="date_lost" class="form-control" required>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group full-width">
+          <label class="form-label" for="description">Detailed Description <span class="required">*</span></label>
+          <textarea id="description" name="description" class="form-control" placeholder="Mention specific identification marks, color, brand, stickers, scratches, or contents inside..." required></textarea>
+        </div>
+
+        <!-- Image Upload (Optional) -->
+        <div class="form-group full-width">
+          <label class="form-label">Upload Image of Item (Optional)</label>
+          <div class="upload-dropzone" id="imageDropzone">
+            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+            <div class="upload-text">Click or drag &amp; drop an image here</div>
+            <div class="upload-hint">Supported formats: JPG, PNG, WEBP (Max 5MB)</div>
+            <input type="file" id="imageUploadInput" name="image" accept="image/*">
+          </div>
+          <div class="image-preview-wrapper" id="imagePreviewWrapper">
+            <img src="" id="imagePreviewImg" alt="Preview">
+            <div>
+              <div style="font-size:0.85rem; font-weight:600;" id="imagePreviewName">filename.jpg</div>
+              <div style="font-size:0.75rem; color:var(--accent-emerald);">Ready for upload</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="reset" class="btn btn-reset" id="resetLostForm">
+          <i class="fas fa-undo"></i> Reset Form
+        </button>
+        <button type="submit" class="btn btn-primary" id="submitLostForm">
+          <i class="fas fa-paper-plane"></i> Submit Lost Report
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Default date to today
+  document.getElementById('date_lost').valueAsDate = new Date();
+</script>
+{% endblock %}

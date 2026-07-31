@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Official College Lost Things and Found System - Report lost items, upload found items, and claim lost property securely.">
+  <title>{% block title %}College Lost & Found System{% endblock %}</title>
+  
+  <!-- CSS Master Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/logo.svg') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Notice Bar -->
+  <div class="top-notice-bar">
+    <span class="badge-mini"><i class="fas fa-shield-alt"></i> Official Campus Portal</span>
+    <span>Have you lost or found something on campus? Report it online instantly!</span>
+  </div>
+
+  <!-- Header & Navigation -->
+  <header class="navbar-header">
+    <div class="nav-container">
+      <a href="{{ url_for('main.index') }}" class="brand-logo" id="mainBrandLogo">
+        <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="College Lost & Found Logo">
+      </a>
+
+      <button class="mobile-toggle" id="mobileNavToggle" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <ul class="nav-links" id="navLinks">
+        <li class="nav-item"><a href="{{ url_for('main.index') }}" class="{% if request.endpoint == 'main.index' %}active{% endif %}"><i class="fas fa-home"></i> Home</a></li>
+        <li class="nav-item"><a href="{{ url_for('main.found_items') }}" class="{% if request.endpoint == 'main.found_items' %}active{% endif %}"><i class="fas fa-th-large"></i> Found Items</a></li>
+        <li class="nav-item"><a href="{{ url_for('main.lost_items') }}" class="{% if request.endpoint == 'main.lost_items' %}active{% endif %}"><i class="fas fa-search-location"></i> Lost Items</a></li>
+        <li class="nav-item"><a href="{{ url_for('main.report_lost') }}" class="{% if request.endpoint == 'main.report_lost' %}active{% endif %}"><i class="fas fa-exclamation-triangle"></i> Report Lost</a></li>
+        <li class="nav-item"><a href="{{ url_for('main.upload_found') }}" class="nav-cta-btn {% if request.endpoint == 'main.upload_found' %}active{% endif %}"><i class="fas fa-plus-circle"></i> Upload Found Item</a></li>
+        
+        {% if session.get('admin_logged_in') %}
+          <li class="nav-item"><a href="{{ url_for('admin.dashboard') }}" style="color: var(--accent-amber);"><i class="fas fa-user-shield"></i> Admin Panel</a></li>
+          <li class="nav-item"><a href="{{ url_for('admin.logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        {% else %}
+          <li class="nav-item"><a href="{{ url_for('admin.login') }}"><i class="fas fa-lock"></i> Admin Login</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </header>
+
+  <!-- Flash Messages Toast Alerts -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="toast-container" id="toastContainer">
+        {% for category, message in messages %}
+          <div class="toast toast-{{ category }}">
+            {% if category == 'success' %}
+              <i class="fas fa-check-circle" style="color:#10b981; font-size:1.2rem;"></i>
+            {% elif category == 'error' %}
+              <i class="fas fa-exclamation-circle" style="color:#ef4444; font-size:1.2rem;"></i>
+            {% else %}
+              <i class="fas fa-info-circle" style="color:#3b82f6; font-size:1.2rem;"></i>
+            {% endif %}
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <h3>College Lost &amp; Found Portal</h3>
+        <p>A centralized platform for students, faculty, and campus staff to report missing items, browse recovered belongings, and submit ownership verification claims.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="{{ url_for('main.index') }}">Home</a></li>
+          <li><a href="{{ url_for('main.found_items') }}">Browse Found Items</a></li>
+          <li><a href="{{ url_for('main.lost_items') }}">Browse Lost Items</a></li>
+          <li><a href="{{ url_for('main.report_lost') }}">Report Lost Item</a></li>
+          <li><a href="{{ url_for('main.upload_found') }}">Upload Found Item</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Information</h4>
+        <ul>
+          <li><a href="{{ url_for('main.about') }}">About Project</a></li>
+          <li><a href="{{ url_for('main.contact') }}">Contact Desk</a></li>
+          <li><a href="{{ url_for('main.privacy') }}">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Campus Support</h4>
+        <p style="font-size:0.85rem; color:var(--neutral-400); margin-bottom:8px;">Campus Security Office, Building A</p>
+        <p style="font-size:0.85rem; color:var(--neutral-400); margin-bottom:8px;"><i class="fas fa-phone"></i> Helpline: +91 98765 43210</p>
+        <p style="font-size:0.85rem; color:var(--neutral-400);"><i class="fas fa-envelope"></i> lostfound@college.edu</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 College Lost Things and Found System. All rights reserved.</p>
+      <p>Built with Python (Flask), SQLite &amp; Vanilla CSS</p>
+    </div>
+  </footer>
+
+  <!-- Master JavaScript -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

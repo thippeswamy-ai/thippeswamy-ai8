@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login | College Lost & Found System{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:480px;">
+  <div class="form-card" style="padding:36px;">
+    <div style="text-align:center; margin-bottom:28px;">
+      <div style="width:70px; height:70px; border-radius:50%; background:var(--primary-50); border:2px solid var(--primary-200); display:inline-flex; align-items:center; justify-content:center; color:var(--primary-600); font-size:2rem; margin-bottom:12px;">
+        <i class="fas fa-user-shield"></i>
+      </div>
+      <h2 style="font-family:var(--font-heading); font-size:1.8rem; color:var(--neutral-900);">Administrator Login</h2>
+      <p style="font-size:0.875rem; color:var(--neutral-500); margin-top:4px;">Secure portal access for campus security &amp; admin officers</p>
+    </div>
+
+    <form action="{{ url_for('admin.login') }}" method="POST">
+      <div class="form-group" style="margin-bottom:20px;">
+        <label class="form-label" for="username">Username <span class="required">*</span></label>
+        <div style="position:relative;">
+          <input type="text" id="username" name="username" class="form-control" placeholder="Enter admin username" style="padding-left:40px;" required autofocus>
+          <i class="fas fa-user" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--neutral-400);"></i>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:24px;">
+        <label class="form-label" for="password">Password <span class="required">*</span></label>
+        <div style="position:relative;">
+          <input type="password" id="password" name="password" class="form-control" placeholder="Enter admin password" style="padding-left:40px;" required>
+          <i class="fas fa-lock" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--neutral-400);"></i>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width:100%; padding:14px;">
+        <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+      </button>
+
+      <div style="margin-top:20px; text-align:center; font-size:0.8rem; color:var(--neutral-500); background:var(--neutral-100); padding:10px; border-radius:var(--radius-sm);">
+        <i class="fas fa-info-circle" style="color:var(--primary-600);"></i> Default credentials: Username <strong>admin</strong> | Password <strong>admin123</strong>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
